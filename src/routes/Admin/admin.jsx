@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -15,13 +15,24 @@ import {
   School,
   ClipboardList
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import getDatas from '../../api/Students/getTotalStudents';
 
-const EduAISystem = () => {
+
+
+const EduAISystem =  () =>  { 
   const [activeSection, setActiveSection] = useState('asignar-cursos');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
+  const [totalStudents, setTotalStudents] = useState([]);
 
+  useEffect(() => {
+      async function getTotalStudents() {
+          const studentsData = await getDatas('https://apex.oracle.com/pls/apex/eduai/api/total_estudiantes/');
+          setTotalStudents(studentsData);
+      }
+      getTotalStudents();
+  }, []);
   // Datos de muestra
   const teachers = [
     {
@@ -378,7 +389,7 @@ const EduAISystem = () => {
         <div style={styles.statCard}>
           <div>
             <p style={styles.statLabel}>Estudiantes</p>
-            <p style={styles.statNumber}>{dashboardStats.students}</p>
+            <p style={styles.statNumber}>{totalStudents[0]?.total_estudiantes}</p>
           </div>
           <GraduationCap size={32} color="#2563eb" />
         </div>
@@ -635,12 +646,12 @@ const EduAISystem = () => {
                     }}
                     onMouseOver={(e) => {
                       if (!isActive) {
-                        e.target.style.backgroundColor = '#f8fafc';
+                        e.target.style.background = '#f8fafc';
                       }
                     }}
                     onMouseOut={(e) => {
                       if (!isActive) {
-                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.background = 'transparent';
                       }
                     }}
                   >
