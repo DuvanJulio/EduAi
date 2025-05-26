@@ -17,13 +17,15 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import getDatas from "../../api/Dashboard/getTotalDashboard";
+import getTeachers from "../../api/Profesesors/getTeachers";
+import DataTable from "react-data-table-component";
 
 const EduAISystem = () => {
   const [activeSection, setActiveSection] = useState("asignar-cursos");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
   const [totalDashboard, setTotalDashboard] = useState([]);
-  const [risk, setRisk] = useState([]); 
+  const [risk, setRisk] = useState([]);
 
   useEffect(() => {
     async function getTotalDahsboard() {
@@ -35,7 +37,6 @@ const EduAISystem = () => {
     getTotalDahsboard();
   }, []);
 
-  
   useEffect(() => {
     async function getRisk() {
       const riskData = await getDatas(
@@ -45,31 +46,6 @@ const EduAISystem = () => {
     }
     getRisk();
   }, []);
-
-  // Datos de muestra
-  const teachers = [
-    {
-      id: 1,
-      name: "María González",
-      subjects: "Matemáticas, Física",
-      schedule: "Lunes a Viernes, 7:00 - 14:00",
-      assignedCourses: 3,
-    },
-    {
-      id: 2,
-      name: "Carlos Rodríguez",
-      subjects: "Química, Biología",
-      schedule: "Lunes a Viernes, 8:00 - 15:00",
-      assignedCourses: 2,
-    },
-    {
-      id: 3,
-      name: "Ana Martínez",
-      subjects: "Literatura, Historia",
-      schedule: "Lunes a Viernes, 9:00 - 16:00",
-      assignedCourses: 4,
-    },
-  ];
 
   const subjects = [
     "Matemáticas",
@@ -486,7 +462,7 @@ const EduAISystem = () => {
               Riesgo Alto
             </p>
             <p style={{ ...styles.riskNumber, ...styles.riskNumberHigh }}>
-            {risk[0]?.total_riesgo_alto}
+              {risk[0]?.total_riesgo_alto}
             </p>
             <p
               style={{
@@ -502,7 +478,7 @@ const EduAISystem = () => {
               Riesgo Medio
             </p>
             <p style={{ ...styles.riskNumber, ...styles.riskNumberMedium }}>
-            {risk[0]?.total_riesgo_medio}
+              {risk[0]?.total_riesgo_medio}
             </p>
             <p
               style={{
@@ -518,7 +494,7 @@ const EduAISystem = () => {
               Riesgo Bajo
             </p>
             <p style={{ ...styles.riskNumber, ...styles.riskNumberLow }}>
-            {risk[0]?.total_riesgo_bajo}
+              {risk[0]?.total_riesgo_bajo}
             </p>
             <p
               style={{
@@ -732,7 +708,7 @@ const EduAISystem = () => {
         <div>
           {teachers.map((teacher) => (
             <div
-              key={teacher.id}
+              key={teacher.id_profesor}
               style={styles.teacherCard}
               onMouseOver={(e) => (e.target.style.backgroundColor = "#f8fafc")}
               onMouseOut={(e) => (e.target.style.backgroundColor = "white")}
@@ -775,7 +751,54 @@ const EduAISystem = () => {
       </div>
     </div>
   );
+  {
+    /* Mostrar profesores */
+  }
+  const [teachers, setTeachers] = useState([]);
+  const [filterText, setFilterText] = useState("");
 
+  useEffect(() => {
+    async function getTeachers() {
+      const totalDashboardData = await getDatas(
+        "https://apex.oracle.com/pls/apex/eduai/api/teachers/"
+      );
+      setTeachers(totalDashboardData);
+    }
+    getTeachers();
+  }, []);
+
+  const filteredTeachers = teachers.filter((teacher) =>
+    teacher.nombre?.toLowerCase().includes(filterText.toLowerCase())
+  );
+
+  const columns = [
+    {
+      name: "Nombre",
+      selector: (row) => `${row.nombre} ${row.apellido}`,
+      sortable: true,
+    },
+    {
+      name: "Correo",
+      selector: (row) => row.correo,
+    },
+    {
+      name: "Teléfono",
+      selector: (row) => row.telefono,
+    },
+    {
+      name: "Especialidad",
+      selector: (row) => row.especialidad,
+    },
+    {
+      name: "Nivel Académico",
+      selector: (row) => row.nivel_academico,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => <button onClick={() => handleEdit(row)}>Editar</button>,
+      ignoreRowClick: true,
+    },
+  ];
   const renderTeachers = () => (
     <div>
       <div
@@ -786,21 +809,104 @@ const EduAISystem = () => {
           marginBottom: "24px",
         }}
       >
-        <h2 style={styles.pageTitle}>Gestión de Profesores</h2>
-        <button style={styles.button}>
+        <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>
+          Gestión de Profesores
+        </h2>
+        <button
+          style={{
+            padding: "8px 12px",
+            backgroundColor: "#1d4ed8",
+            color: "#fff",
+            borderRadius: "6px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
           <Plus size={16} />
           Nuevo profesor
         </button>
       </div>
 
-      <div style={styles.card}>
-        <p style={{ color: "#64748b" }}>
-          Gestión completa de profesores con funcionalidades de búsqueda,
-          edición y asignación de cursos...
-        </p>
-      </div>
+      <DataTable
+        title="Lista de Profesores"
+        columns={columns}
+        data={filteredTeachers}
+        pagination
+        highlightOnHover
+        pointerOnHover
+        responsive
+        subHeader
+        subHeaderComponent={
+          <input
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            style={{
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              width: "200px",
+            }}
+          />
+        }
+      />
     </div>
   );
+
+  {
+    /* Mostrar estudiantes */
+  }
+  const [students, setStudents] = useState([]);
+
+
+  useEffect(() => {
+    async function getTeachers() {
+      const studentsData= await getDatas(
+        "https://apex.oracle.com/pls/apex/eduai/api/students/"
+      );
+      setStudents(studentsData);
+    }
+    getTeachers();
+  }, []);
+
+  const filteredStudents = students.filter((student) =>
+    student.nombre?.toLowerCase().includes(filterText.toLowerCase())
+  );
+
+  const columnsStudents = [
+    {
+      name: "Nombre",
+      selector: (row) => `${row.nombre} ${row.apellido}`,
+      sortable: true,
+    },
+    {
+      name: "Correo",
+      selector: (row) => row.correo,
+    },
+    {
+      name: "Teléfono",
+      selector: (row) => row.telefono,
+    },
+    {
+      name: "Grado",
+      selector: (row) => row.grado,
+    },
+    {
+      name: "Fecha de ingreso",
+      selector: (row) => row.fecha_ingreso,
+    },
+    {
+      name: "Nombre salón",
+      selector: (row) => row.nombre_salon,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => <button onClick={() => handleEdit(row)}>Editar</button>,
+      ignoreRowClick: true,
+    },
+  ];
 
   const renderStudents = () => (
     <div>
@@ -812,33 +918,52 @@ const EduAISystem = () => {
           marginBottom: "24px",
         }}
       >
-        <h2 style={styles.pageTitle}>Gestión de Estudiantes</h2>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            style={{
-              ...styles.buttonSecondary,
-              backgroundColor: "#10b981",
-              color: "white",
-            }}
-          >
-            <FileText size={16} />
-            Exportar
-          </button>
-          <button style={styles.button}>
-            <Plus size={16} />
-            Nuevo estudiante
-          </button>
-        </div>
+        <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>
+          Gestión de Profesores
+        </h2>
+        <button
+          style={{
+            padding: "8px 12px",
+            backgroundColor: "#1d4ed8",
+            color: "#fff",
+            borderRadius: "6px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <Plus size={16} />
+          Nuevo profesor
+        </button>
       </div>
 
-      <div style={styles.card}>
-        <p style={{ color: "#64748b" }}>
-          Sistema de gestión de estudiantes con análisis de riesgo de deserción
-          y seguimiento académico...
-        </p>
-      </div>
+      <DataTable
+        title="Lista de Profesores"
+        columns={columnsStudents}
+        data={filteredStudents}
+        pagination
+        highlightOnHover
+        pointerOnHover
+        responsive
+        subHeader
+        subHeaderComponent={
+          <input
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            style={{
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              width: "200px",
+            }}
+          />
+        }
+      />
     </div>
   );
+
 
   const renderSettings = () => (
     <div>
