@@ -18,6 +18,8 @@ import {
 import { useEffect } from "react";
 import getDatas from "../../api/Dashboard/getTotalDashboard";
 import getTeachers from "../../api/Profesesors/getTeachers";
+import getStudents from "../../api/Students/getStudents";
+import postStudent from "../../api/Students/postStudent";
 import DataTable from "react-data-table-component";
 
 const EduAISystem = () => {
@@ -751,6 +753,7 @@ const EduAISystem = () => {
       </div>
     </div>
   );
+
   {
     /* Mostrar profesores */
   }
@@ -758,13 +761,13 @@ const EduAISystem = () => {
   const [filterText, setFilterText] = useState("");
 
   useEffect(() => {
-    async function getTeachers() {
-      const totalDashboardData = await getDatas(
+    async function getTeachersDatas() {
+      const totalDashboardData = await getTeachers(
         "https://apex.oracle.com/pls/apex/eduai/api/teachers/"
       );
       setTeachers(totalDashboardData);
     }
-    getTeachers();
+    getTeachersDatas();
   }, []);
 
   const filteredTeachers = teachers.filter((teacher) =>
@@ -855,21 +858,62 @@ const EduAISystem = () => {
     </div>
   );
 
-  {
-    /* Mostrar estudiantes */
-  }
+  /* Mostrar estudiantes */
   const [students, setStudents] = useState([]);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newStudent, setNewStudent] = useState({
+    id_usuario: 0,
+    identificacion: '',
+    nombre: '',
+    apellido: '',
+    correo: '',
+    contrasena: '',
+    telefono: '',
+    id_estudiante: 0,
+    id_salon_fk: 1,
+    grado: ''
+  });
 
   useEffect(() => {
-    async function getTeachers() {
-      const studentsData= await getDatas(
+    async function getStudentsData() {
+      const studentsData = await getStudents(
         "https://apex.oracle.com/pls/apex/eduai/api/students/"
       );
       setStudents(studentsData);
     }
-    getTeachers();
+    getStudentsData();
   }, []);
+
+  const handleCreateStudent = async () => {
+    try {
+      const response = await postStudent(
+        "https://apex.oracle.com/pls/apex/eduai/api/students/",
+        newStudent
+      );
+      if (response) {
+        // Actualizar la lista de estudiantes
+        const updatedStudents = await getStudents(
+          "https://apex.oracle.com/pls/apex/eduai/api/students/"
+        );
+        setStudents(updatedStudents);
+        setIsModalOpen(false);
+        setNewStudent({
+          id_usuario: 0,
+          identificacion: '',
+          nombre: '',
+          apellido: '',
+          correo: '',
+          contrasena: '',
+          telefono: '',
+          id_estudiante: 0,
+          id_salon_fk: 1,
+          grado: ''
+        });
+      }
+    } catch (error) {
+      console.error('Error al crear el estudiante:', error);
+    }
+  };
 
   const filteredStudents = students.filter((student) =>
     student.nombre?.toLowerCase().includes(filterText.toLowerCase())
@@ -919,9 +963,10 @@ const EduAISystem = () => {
         }}
       >
         <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>
-          Gestión de Profesores
+          Gestión de Estudiantes
         </h2>
         <button
+          onClick={() => setIsModalOpen(true)}
           style={{
             padding: "8px 12px",
             backgroundColor: "#1d4ed8",
@@ -933,12 +978,12 @@ const EduAISystem = () => {
           }}
         >
           <Plus size={16} />
-          Nuevo profesor
+          Nuevo estudiante
         </button>
       </div>
 
       <DataTable
-        title="Lista de Profesores"
+        title="Lista de Estudiantes"
         columns={columnsStudents}
         data={filteredStudents}
         pagination
@@ -961,9 +1006,110 @@ const EduAISystem = () => {
           />
         }
       />
+
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            width: '500px'
+          }}>
+            <h3>Nuevo Estudiante</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+              <input
+                type="text"
+                placeholder="Identificación"
+                value={newStudent.identificacion}
+                onChange={(e) => setNewStudent({...newStudent, identificacion: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="text"
+                placeholder="Nombre"
+                value={newStudent.nombre}
+                onChange={(e) => setNewStudent({...newStudent, nombre: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="text"
+                placeholder="Apellido"
+                value={newStudent.apellido}
+                onChange={(e) => setNewStudent({...newStudent, apellido: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="email"
+                placeholder="Correo"
+                value={newStudent.correo}
+                onChange={(e) => setNewStudent({...newStudent, correo: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={newStudent.contrasena}
+                onChange={(e) => setNewStudent({...newStudent, contrasena: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="text"
+                placeholder="Teléfono"
+                value={newStudent.telefono}
+                onChange={(e) => setNewStudent({...newStudent, telefono: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="text"
+                placeholder="Grado"
+                value={newStudent.grado}
+                onChange={(e) => setNewStudent({...newStudent, grado: e.target.value})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#e5e7eb',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleCreateStudent}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#1d4ed8',
+                    color: 'white',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-
 
   const renderSettings = () => (
     <div>
