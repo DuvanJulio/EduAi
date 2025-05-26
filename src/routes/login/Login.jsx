@@ -15,7 +15,7 @@ export default function LoginPage() {
   useEffect(() => {
     const sessionEmail = Cookies.get('usuario');
     if (sessionEmail) {
-      navigate('/dashboard');
+      navigate('/administrador');
     }
   }, [navigate]);
 
@@ -36,7 +36,7 @@ export default function LoginPage() {
           Cookies.set('usuario', usuario.correo); // Se borra al cerrar el navegador
         }
   
-        navigate('/dashboard');
+        navigate('/administrador');
       } else {
         alert('Correo o contraseña incorrectos');
       }
