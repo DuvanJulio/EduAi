@@ -20,6 +20,7 @@ import getDatas from "../../api/Dashboard/getTotalDashboard";
 import getTeachers from "../../api/Profesesors/getTeachers";
 import getStudents from "../../api/Students/getStudents";
 import postStudent from "../../api/Students/postStudent";
+import postTeacher from "../../api/Profesesors/postTeacher";
 import DataTable from "react-data-table-component";
 
 const EduAISystem = () => {
@@ -940,6 +941,7 @@ const EduAISystem = () => {
     {
       name: "Fecha de ingreso",
       selector: (row) => row.fecha_ingreso,
+      sortable: true,
     },
     {
       name: "Nombre salón",
@@ -1028,55 +1030,101 @@ const EduAISystem = () => {
           }}>
             <h3>Nuevo Estudiante</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151' }}>
+                  ID Usuario *
+                </label>
+                <input
+                  type="number"
+                  placeholder="Ingrese el ID del usuario"
+                  value={newStudent.id_usuario}
+                  onChange={(e) => setNewStudent({...newStudent, id_usuario: parseInt(e.target.value)})}
+                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151' }}>
+                  ID Estudiante *
+                </label>
+                <input
+                  type="number"
+                  placeholder="Ingrese el ID del estudiante"
+                  value={newStudent.id_estudiante}
+                  onChange={(e) => setNewStudent({...newStudent, id_estudiante: parseInt(e.target.value)})}
+                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151' }}>
+                  ID Salón *
+                </label>
+                <input
+                  type="number"
+                  placeholder="Ingrese el ID del salón"
+                  value={newStudent.id_salon_fk}
+                  onChange={(e) => setNewStudent({...newStudent, id_salon_fk: parseInt(e.target.value)})}
+                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
+                />
+              </div>
+
               <input
-                type="text"
-                placeholder="Identificación"
+                type="number"
+                placeholder="Número de Identificación *"
                 value={newStudent.identificacion}
-                onChange={(e) => setNewStudent({...newStudent, identificacion: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                onChange={(e) => setNewStudent({...newStudent, identificacion: parseInt(e.target.value)})}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <input
                 type="text"
-                placeholder="Nombre"
+                placeholder="Nombre *"
                 value={newStudent.nombre}
                 onChange={(e) => setNewStudent({...newStudent, nombre: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <input
                 type="text"
-                placeholder="Apellido"
+                placeholder="Apellido *"
                 value={newStudent.apellido}
                 onChange={(e) => setNewStudent({...newStudent, apellido: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <input
                 type="email"
-                placeholder="Correo"
+                placeholder="Correo Electrónico *"
                 value={newStudent.correo}
                 onChange={(e) => setNewStudent({...newStudent, correo: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <input
                 type="password"
-                placeholder="Contraseña"
+                placeholder="Contraseña *"
                 value={newStudent.contrasena}
                 onChange={(e) => setNewStudent({...newStudent, contrasena: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <input
                 type="text"
-                placeholder="Teléfono"
+                placeholder="Teléfono *"
                 value={newStudent.telefono}
                 onChange={(e) => setNewStudent({...newStudent, telefono: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <input
                 type="text"
-                placeholder="Grado"
+                placeholder="Grado *"
                 value={newStudent.grado}
                 onChange={(e) => setNewStudent({...newStudent, grado: e.target.value})}
-                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '100%' }}
               />
+
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
                 <button
                   onClick={() => setIsModalOpen(false)}
