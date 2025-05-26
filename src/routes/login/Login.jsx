@@ -23,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch(`https://apex.oracle.com/pls/apex/duvanxjulio/api/duvanxjulio/login?correo=${email}&contrasena=${password}`);
+      const response = await fetch(`https://apex.oracle.com/pls/apex/eduai/api/login/?correo=${email}&contrasena=${password}`);
       const data = await response.json();
   
       if (data.items && data.items.length > 0) {

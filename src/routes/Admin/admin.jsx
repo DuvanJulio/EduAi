@@ -509,24 +509,7 @@ const EduAISystem = () => {
             </p>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "24px",
-            }}
-          >
-            <h2 style={styles.pageTitle}>Asignar cursos a profesores</h2>
-            <button
-              style={styles.button}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#1d4ed8")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#2563eb")}
-            >
-              <UserPlus size={16} />
-              Agregar profesor
-            </button>
-          </div>
+     
         </div>
       </div>
 
